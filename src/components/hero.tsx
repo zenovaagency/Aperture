@@ -8,7 +8,7 @@ import { HeroPanel } from "@/components/hero-panel";
 
 export function Hero() {
   return (
-    <section id="top" className="bg-noise relative overflow-hidden pt-32 pb-20 sm:pt-40 sm:pb-28">
+    <section id="top" className="bg-noise relative pt-32 pb-20 sm:pt-40 sm:pb-28">
       {/* layered background */}
       <div aria-hidden className="bg-mesh absolute inset-0 -z-20" />
       <div aria-hidden className="bg-grid bg-grid-fade absolute inset-0 -z-10 opacity-60" />

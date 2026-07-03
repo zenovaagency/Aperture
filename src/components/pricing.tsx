@@ -18,31 +18,46 @@ export function Pricing() {
         lead="Every plan includes natural-language queries and unlimited dashboards. No per-query fees, ever."
       />
 
-      {/* toggle */}
-      <div className="mt-8 flex items-center justify-center gap-4">
-        <span className={`text-sm ${annual ? "text-muted" : "text-text"}`}>Monthly</span>
-        <button
-          type="button"
-          role="switch"
-          aria-checked={annual}
-          aria-label="Toggle annual billing"
-          onClick={() => setAnnual((v) => !v)}
-          className={`relative h-7 w-12 rounded-full border border-border transition-colors ${
-            annual ? "bg-accent" : "bg-surface-3"
-          }`}
+      {/* toggle — segmented pill, sliding indicator (mirrors the showcase tabs) */}
+      <div className="mt-8 flex justify-center">
+        <div
+          role="group"
+          aria-label="Billing period"
+          className="relative inline-flex rounded-full border border-border bg-surface/60 p-1 backdrop-blur"
         >
           <span
-            className={`absolute top-0.5 h-5 w-5 rounded-full bg-[#0a0a0b] transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ${
-              annual ? "translate-x-6" : "translate-x-0.5"
-            }`}
+            aria-hidden
+            className="absolute inset-y-1 left-1 w-[calc(50%-4px)] rounded-full bg-accent shadow-[0_1px_0_rgba(255,255,255,0.25)_inset,0_4px_14px_-4px_rgba(255,106,61,0.6)] transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]"
+            style={{ transform: annual ? "translateX(100%)" : "translateX(0)" }}
           />
-        </button>
-        <span className={`flex items-center gap-2 text-sm ${annual ? "text-text" : "text-muted"}`}>
-          Annual
-          <span className="rounded-full bg-accent-soft px-2 py-0.5 font-mono text-[0.62rem] text-accent">
-            Save 20%
-          </span>
-        </span>
+          <button
+            type="button"
+            aria-pressed={!annual}
+            onClick={() => setAnnual(false)}
+            className={`relative z-10 flex-1 whitespace-nowrap rounded-full px-5 py-2 text-sm font-medium transition-colors duration-200 ${
+              !annual ? "text-[#0a0a0b]" : "text-text-secondary hover:text-text"
+            }`}
+          >
+            Monthly
+          </button>
+          <button
+            type="button"
+            aria-pressed={annual}
+            onClick={() => setAnnual(true)}
+            className={`relative z-10 flex flex-1 items-center justify-center gap-2 whitespace-nowrap rounded-full px-5 py-2 text-sm font-medium transition-colors duration-200 ${
+              annual ? "text-[#0a0a0b]" : "text-text-secondary hover:text-text"
+            }`}
+          >
+            Annual
+            <span
+              className={`rounded-full px-1.5 py-0.5 font-mono text-[0.6rem] transition-colors duration-200 ${
+                annual ? "bg-[#0a0a0b]/15 text-[#0a0a0b]" : "bg-accent-soft text-accent"
+              }`}
+            >
+              -20%
+            </span>
+          </button>
+        </div>
       </div>
 
       {/* tiers */}
