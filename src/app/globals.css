@@ -1,26 +1,347 @@
 @import "tailwindcss";
 
+/* ============================================================
+   Aperture — design tokens
+   Dark-only. Warm near-black neutrals + a single Ember accent.
+   ============================================================ */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* surfaces */
+  --background: #0a0a0b;
+  --surface: #121214;
+  --surface-2: #1a1a1d;
+  --surface-3: #202024;
+
+  /* hairlines */
+  --border: rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(255, 255, 255, 0.14);
+
+  /* ink */
+  --text: #f4f2ed;
+  --text-secondary: #a6a29b;
+  --muted: #6e6a63;
+
+  /* ember accent */
+  --accent: #ff6a3d;
+  --accent-hover: #ff7e57;
+  --accent-soft: rgba(255, 106, 61, 0.12);
+  --accent-line: rgba(255, 106, 61, 0.32);
+
+  /* status */
+  --success: #56c596;
+  --warning: #e7b450;
+  --error: #e5484d;
+
+  /* dataviz — ember sequential + one cool neutral for contrast */
+  --chart-1: #ff6a3d;
+  --chart-2: #ffa473;
+  --chart-3: #c7431f;
+  --chart-4: #f0c05a;
+  --chart-cool: #6f8fa6;
+
+  --easing: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
+/* Map tokens → Tailwind theme so utilities (bg-surface, text-secondary, …) exist.
+   `inline` keeps the var() references intact for runtime. */
 @theme inline {
   --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-surface-3: var(--surface-3);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-text: var(--text);
+  --color-text-secondary: var(--text-secondary);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-soft: var(--accent-soft);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-error: var(--error);
+
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --font-serif: var(--font-instrument);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* ============================================================
+   Base
+   ============================================================ */
+* {
+  border-color: var(--border);
+}
+
+html {
+  scroll-behavior: smooth;
+  color-scheme: dark;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
 body {
   background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  color: var(--text);
+  font-family: var(--font-sans), system-ui, sans-serif;
+  overflow-x: hidden;
+}
+
+::selection {
+  background: var(--accent);
+  color: #0a0a0b;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* Thin, unobtrusive scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: var(--background);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--surface-3);
+  border-radius: 999px;
+  border: 3px solid var(--background);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #33333a;
+}
+
+/* ============================================================
+   Fluid display type
+   ============================================================ */
+.font-serif {
+  font-family: var(--font-serif), Georgia, serif;
+}
+.font-mono {
+  font-family: var(--font-mono), ui-monospace, monospace;
+}
+
+.display {
+  font-size: clamp(2.75rem, 1.2rem + 6.4vw, 6rem);
+  line-height: 0.98;
+  letter-spacing: -0.035em;
+  font-weight: 500;
+}
+.display-sm {
+  font-size: clamp(2rem, 1rem + 3.4vw, 3.5rem);
+  line-height: 1.03;
+  letter-spacing: -0.03em;
+  font-weight: 500;
+}
+.eyebrow {
+  font-family: var(--font-mono), monospace;
+  font-size: 0.75rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+.text-balance {
+  text-wrap: balance;
+}
+.text-pretty {
+  text-wrap: pretty;
+}
+
+/* ============================================================
+   Layered backgrounds — grid + mesh + noise (never flat)
+   ============================================================ */
+.bg-grid {
+  background-image:
+    linear-gradient(to right, var(--border) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--border) 1px, transparent 1px);
+  background-size: 64px 64px;
+}
+.bg-grid-fade {
+  -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, #000 30%, transparent 80%);
+  mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, #000 30%, transparent 80%);
+}
+.bg-mesh {
+  background:
+    radial-gradient(60% 50% at 15% 10%, rgba(255, 106, 61, 0.14), transparent 60%),
+    radial-gradient(55% 55% at 85% 20%, rgba(111, 143, 166, 0.1), transparent 60%),
+    radial-gradient(50% 60% at 50% 100%, rgba(255, 106, 61, 0.08), transparent 70%);
+}
+/* SVG fractal noise, inlined so no network request */
+.bg-noise::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.035;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+.glass {
+  background: color-mix(in oklab, var(--surface) 72%, transparent);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+}
+
+.hairline-t {
+  border-top: 1px solid var(--border);
+}
+
+/* Card default */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+}
+
+/* ============================================================
+   Scroll-reveal (driven by ui/reveal.tsx via .is-visible)
+   ============================================================ */
+.reveal {
+  opacity: 0;
+  transform: translateY(20px);
+  transition:
+    opacity 0.8s var(--easing),
+    transform 0.8s var(--easing),
+    clip-path 0.9s var(--easing);
+  transition-delay: var(--delay, 0ms);
+  will-change: opacity, transform;
+}
+.reveal[data-variant="fade"] {
+  transform: none;
+}
+.reveal[data-variant="scale"] {
+  transform: translateY(20px) scale(0.97);
+}
+.reveal[data-variant="clip"] {
+  transform: none;
+  clip-path: inset(0 0 100% 0);
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: none;
+  clip-path: inset(0 0 0 0);
+}
+
+/* ============================================================
+   Keyframes
+   ============================================================ */
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+.animate-marquee {
+  animation: marquee 42s linear infinite;
+}
+.marquee-track:hover .animate-marquee {
+  animation-play-state: paused;
+}
+.marquee-mask {
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 12%, #000 88%, transparent);
+  mask-image: linear-gradient(to right, transparent, #000 12%, #000 88%, transparent);
+}
+
+@keyframes float-y {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+.animate-float {
+  animation: float-y 7s ease-in-out infinite;
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 0.9;
+  }
+}
+.animate-pulse-glow {
+  animation: pulse-glow 4s ease-in-out infinite;
+}
+
+@keyframes draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes shimmer {
+  to {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes spin-slow {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.animate-spin-slow {
+  animation: spin-slow 40s linear infinite;
+}
+
+@keyframes blink {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.25;
+  }
+}
+.animate-blink {
+  animation: blink 2.4s ease-in-out infinite;
+}
+
+/* Crossfade for showcase panels */
+.panel-enter {
+  animation: panel-in 0.5s var(--easing) both;
+}
+@keyframes panel-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.99);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ============================================================
+   Reduced motion — degrade to instant / opacity-only
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+  .reveal {
+    opacity: 1 !important;
+    transform: none !important;
+    clip-path: none !important;
+  }
+  .animate-marquee {
+    animation: none !important;
+  }
 }
